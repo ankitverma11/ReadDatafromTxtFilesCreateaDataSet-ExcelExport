@@ -14,11 +14,11 @@ namespace UDPFIleMissingConsol
     {
         static void Main(string[] args)
         {
+            string DeviceSerialNumber = Convert.ToString(ConfigurationManager.AppSettings["DeviceSerialNumber"]);
             try
             {
                 DataTable dtUpdatedata = Createdatable();
                 string Folderpath = Convert.ToString(ConfigurationManager.AppSettings["UDPFileFolder"]);
-                string DeviceSerialNumber = Convert.ToString(ConfigurationManager.AppSettings["DeviceSerialNumber"]);
                 string SaveLocation = Convert.ToString(ConfigurationManager.AppSettings["SaveLocation"]);
                 string DestLocation = Convert.ToString(ConfigurationManager.AppSettings["DestLocation"]); 
                 string destinationFile = DestLocation + DeviceSerialNumber + ".csv";
@@ -39,6 +39,7 @@ namespace UDPFIleMissingConsol
                         {
                             drUDP["UniqueID"] = File.ReadAllLines(sr, Encoding.UTF8)[i].Split(',')[1];
                             drUDP["EventTime"] = Convert.ToDateTime(File.ReadAllLines(sr, Encoding.UTF8)[i].Split(',')[2]);
+                            drUDP["Reason"] = Convert.ToString(File.ReadAllLines(sr, Encoding.UTF8)[i].Split(',')[6]);
                             dtUpdatedata.Rows.Add(drUDP);
                         }
 
@@ -59,6 +60,11 @@ namespace UDPFIleMissingConsol
                 Console.WriteLine(ex.Message);
                 Console.ReadLine();
             }
+            finally
+            {
+                Console.WriteLine("File operation has been completed for Device Serial Number : " + DeviceSerialNumber + ".");
+                Console.ReadLine();
+            }
 
         }
 
@@ -67,10 +73,11 @@ namespace UDPFIleMissingConsol
             DataTable dt = new DataTable("UDP");
             try
             {
-                dt.Columns.AddRange(new DataColumn[4] {
+                dt.Columns.AddRange(new DataColumn[5] {
                     new DataColumn("DeviceSerialNumber",typeof(string)),
                     new DataColumn("UniqueID",typeof(string)),
                     new DataColumn("EventTime", typeof(DateTime)),
+                    new DataColumn("Reason", typeof(string)),
                     new DataColumn("Filename",typeof(string))
                 });
             }
